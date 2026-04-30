@@ -26,7 +26,7 @@
             flex-direction: column;
             height: 100vh;
             padding: 16px;
-            padding-top: 48px; /* Space for drag region + header */
+            padding-top: 28px; /* Space for drag region + header */
             gap: 12px;
         }
 
@@ -36,7 +36,7 @@
             top: 0;
             left: 0;
             right: 0;
-            height: 48px;
+            height: 28px;
             -webkit-app-region: drag;
             z-index: 100;
         }
@@ -47,7 +47,7 @@
             top: 0;
             left: 0;
             right: 0;
-            height: 48px;
+            height: 28px;
             display: flex;
             align-items: center;
             padding: 0 16px;
@@ -583,6 +583,7 @@
         /* Link Input */
         .link-input-container {
             flex-shrink: 0;
+            position: relative;
         }
 
         .link-input {
@@ -592,7 +593,7 @@
             -webkit-backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 12px;
-            padding: 12px 14px;
+            padding: 12px 44px 12px 14px;
             font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
             font-size: 12px;
             color: #fff;
@@ -607,6 +608,39 @@
 
         .link-input::placeholder {
             color: rgba(255, 255, 255, 0.3);
+        }
+
+        .qr-upload-btn {
+            position: absolute;
+            right: 6px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            color: rgba(255, 255, 255, 0.5);
+            transition: background 0.15s ease, color 0.15s ease;
+            padding: 0;
+        }
+
+        .qr-upload-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .qr-upload-btn:active {
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .qr-upload-btn svg {
+            width: 18px;
+            height: 18px;
         }
 
         .link-input.flash {
@@ -882,8 +916,9 @@
     <div class="drag-region"></div>
     
     <!-- Header with profile icon -->
+    <!-- TODO: profile icon hidden for now — design and behavior to be decided later. To re-enable, remove the inline style="display: none" below. -->
     <div class="header">
-        <div class="profile-icon" id="profileIcon" title="Profile">
+        <div class="profile-icon" id="profileIcon" title="Profile" style="display: none;">
             <!-- PearDrop Logo SVG (AirDrop-style with pear) -->
             <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <!-- Outer waves -->
@@ -972,9 +1007,21 @@
 
         <!-- Link Input -->
         <div class="link-input-container">
-            <input type="text" class="link-input" id="linkInput" 
-                   placeholder="Paste peardrop:// link..." 
+            <input type="text" class="link-input" id="linkInput"
+                   placeholder="Paste peardrop:// link..."
                    autocomplete="off" spellcheck="false">
+            <label for="qrFileInput" class="qr-upload-btn" id="qrUploadBtn" title="Read peardrop:// link from a QR image">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="3" width="7" height="7"></rect>
+                    <rect x="3" y="14" width="7" height="7"></rect>
+                    <path d="M14 14h3v3h-3z"></path>
+                    <path d="M20 14v3"></path>
+                    <path d="M14 20h3"></path>
+                    <path d="M20 20v1"></path>
+                </svg>
+            </label>
+            <input type="file" id="qrFileInput" accept="image/*" hidden>
         </div>
 
         <!-- Action Buttons -->
@@ -1053,6 +1100,7 @@
     <script src="lib/drive-item/drive-item.js"></script>
     <script src="lib/drive-item/drive-info-panel.js"></script>
     <script src="lib/drive-actions.js"></script>
+    <script src="node_modules/jsqr/dist/jsQR.js"></script>
     <script src="renderer.js"></script>
 </body>
 </html>

@@ -16,6 +16,7 @@
     "corestore": "^7.5.0",
     "hyperdrive": "^13.3.0",
     "hyperswarm": "^4.16.0",
+    "jsqr": "^1.4.0",
     "qrcode": "^1.5.4",
     "ws": "^8.18.3"
   },

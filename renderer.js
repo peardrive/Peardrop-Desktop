@@ -70,6 +70,9 @@ const confirmOverlay = document.getElementById('confirmOverlay');
 const confirmTitle = document.getElementById('confirmTitle');
 const confirmMessage = document.getElementById('confirmMessage');
 const confirmButtons = document.getElementById('confirmButtons');
+const qrUploadBtn = document.getElementById('qrUploadBtn');
+const qrFileInput = document.getElementById('qrFileInput');
+const qrCanvas = document.createElement('canvas');
 
 // ============================================================================
 // STATE
@@ -156,6 +159,7 @@ function init() {
     bindDropZone();
     bindButtons();
     bindInput();
+    bindQrUpload();
     bindModals();
     bindIPC();
     bindScrollListEvents();
@@ -296,6 +300,7 @@ function clearFiles() {
 function bindButtons() {
     shareBtn.addEventListener('click', startShare);
     downloadBtn.addEventListener('click', startDownload);
+    
 }
 
 function bindInput() {
@@ -318,6 +323,57 @@ function bindInput() {
             }
         }, 50);
     });
+}
+
+function bindQrUpload() {
+    qrFileInput.addEventListener('change', async (e) => {
+        const file = e.target.files?.[0];
+        qrFileInput.value = '';
+        if (!file) return;
+        try {
+            const link = await decodeQrFromFile(file);
+            handleScannedLink(link);
+        } catch (err) {
+            showToast(err.message || 'Could not read QR code', 'error');
+        }
+    });
+}
+
+async function decodeQrFromFile(file) {
+    if (!file.type.startsWith('image/')) {
+        throw new Error('Please pick an image file');
+    }
+    const dataUrl = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = () => reject(new Error('Failed to read file'));
+        reader.readAsDataURL(file);
+    });
+    const img = await new Promise((resolve, reject) => {
+        const image = new Image();
+        image.onload = () => resolve(image);
+        image.onerror = () => reject(new Error('Failed to load image'));
+        image.src = dataUrl;
+    });
+    qrCanvas.width = img.naturalWidth;
+    qrCanvas.height = img.naturalHeight;
+    const ctx = qrCanvas.getContext('2d');
+    ctx.drawImage(img, 0, 0);
+    const imageData = ctx.getImageData(0, 0, qrCanvas.width, qrCanvas.height);
+    const result = window.jsQR(imageData.data, imageData.width, imageData.height);
+    if (!result?.data) throw new Error('No QR code found in image');
+    return result.data;
+}
+
+function handleScannedLink(text) {
+    if (!text.startsWith('peardrop://')) {
+        showToast('QR doesn\'t contain a PearDrop link', 'error');
+        return;
+    }
+    linkInput.value = text;
+    linkInput.classList.add('flash');
+    setTimeout(() => linkInput.classList.remove('flash'), 500);
+    //startDownload(); // a plan for later on
 }
 
 async function startShare() {
@@ -348,6 +404,7 @@ async function startShare() {
                 title: shareName,
                 size: activeFiles.reduce((sum, f) => sum + (f.size || 0), 0),
                 fileCount: activeFiles.length,
+                files: activeFiles.map(f => ({ name: f.name, size: f.size })),
                 status: 'sharing',
                 peers: 0,
                 type: 'share',
@@ -444,6 +501,8 @@ async function startDownload() {
         id: driveId,
         title: openResult.shareName || 'Download',
         size: openResult.totalBytes || 0,
+        fileCount: openResult.files?.length || 1,
+        files: (openResult.files || []).map(f => ({ name: f.name, size: f.size })),
         status: 'downloading',
         progress: 0,
         peers: hasPeer ? 1 : 0,
@@ -1379,3 +1438,4 @@ if (document.readyState === 'complete' || document.readyState === 'interactive')
     loadDebugState();
     init();
 }
+
