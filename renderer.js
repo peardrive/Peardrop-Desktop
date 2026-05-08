@@ -23,6 +23,7 @@
  *   - ScrollList (lib/scroll-list/scroll-list.js)
  *   - DriveItem (lib/drive-item/drive-item.js)
  *   - DriveActions (lib/drive-actions.js)
+ *   - QrScanner (lib/qr-scanner/qr-scanner.js) — window.openQrScanner
  * 
  * IPC CALLS (via window.electronAPI):
  *   - hyperdriveShare, hyperdriveOpen, hyperdriveDownload
@@ -71,8 +72,6 @@ const confirmTitle = document.getElementById('confirmTitle');
 const confirmMessage = document.getElementById('confirmMessage');
 const confirmButtons = document.getElementById('confirmButtons');
 const qrUploadBtn = document.getElementById('qrUploadBtn');
-const qrFileInput = document.getElementById('qrFileInput');
-const qrCanvas = document.createElement('canvas');
 
 // ============================================================================
 // STATE
@@ -326,43 +325,9 @@ function bindInput() {
 }
 
 function bindQrUpload() {
-    qrFileInput.addEventListener('change', async (e) => {
-        const file = e.target.files?.[0];
-        qrFileInput.value = '';
-        if (!file) return;
-        try {
-            const link = await decodeQrFromFile(file);
-            handleScannedLink(link);
-        } catch (err) {
-            showToast(err.message || 'Could not read QR code', 'error');
-        }
+    qrUploadBtn.addEventListener('click', () => {
+        window.openQrScanner({ onResult: handleScannedLink });
     });
-}
-
-async function decodeQrFromFile(file) {
-    if (!file.type.startsWith('image/')) {
-        throw new Error('Please pick an image file');
-    }
-    const dataUrl = await new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = () => reject(new Error('Failed to read file'));
-        reader.readAsDataURL(file);
-    });
-    const img = await new Promise((resolve, reject) => {
-        const image = new Image();
-        image.onload = () => resolve(image);
-        image.onerror = () => reject(new Error('Failed to load image'));
-        image.src = dataUrl;
-    });
-    qrCanvas.width = img.naturalWidth;
-    qrCanvas.height = img.naturalHeight;
-    const ctx = qrCanvas.getContext('2d');
-    ctx.drawImage(img, 0, 0);
-    const imageData = ctx.getImageData(0, 0, qrCanvas.width, qrCanvas.height);
-    const result = window.jsQR(imageData.data, imageData.width, imageData.height);
-    if (!result?.data) throw new Error('No QR code found in image');
-    return result.data;
 }
 
 function handleScannedLink(text) {

@@ -850,6 +850,232 @@
             background: rgba(255, 255, 255, 0.12);
         }
 
+        /* QR Scanner Modal */
+        .qr-scanner-modal {
+            max-width: 380px;
+            position: relative;
+        }
+
+        .qr-scanner-close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 28px;
+            height: 28px;
+            border: none;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 50%;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 18px;
+            line-height: 1;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.15s ease;
+        }
+
+        .qr-scanner-close:hover {
+            background: rgba(255, 255, 255, 0.16);
+            color: #fff;
+        }
+
+        .qr-scanner-stage {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 1;
+            background: #000;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 14px 0 12px;
+        }
+
+        .qr-scanner-video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .qr-scanner-frame {
+            position: absolute;
+            inset: 16%;
+            border: 2px solid rgba(168, 206, 56, 0.7);
+            border-radius: 12px;
+            box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.25) inset;
+            pointer-events: none;
+        }
+
+        .qr-scanner-status {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 13px;
+            text-align: center;
+            padding: 16px;
+            background: rgba(0, 0, 0, 0.4);
+        }
+
+        .qr-scanner-status[hidden] {
+            display: none !important;
+        }
+
+        /* Custom camera dropdown — replaces native <select> for theme consistency */
+        .qr-camera-dropdown {
+            position: relative;
+            margin-bottom: 8px;
+        }
+
+        .qr-camera-dropdown[hidden] {
+            display: none !important;
+        }
+
+        .qr-camera-trigger {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 10px 12px;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 12px;
+            font-family: inherit;
+            cursor: pointer;
+            transition: background 0.15s ease, border-color 0.15s ease;
+        }
+
+        .qr-camera-trigger:hover {
+            background: rgba(255, 255, 255, 0.09);
+        }
+
+        .qr-camera-dropdown.is-open .qr-camera-trigger {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(168, 206, 56, 0.4);
+        }
+
+        .qr-camera-trigger-icon {
+            width: 16px;
+            height: 16px;
+            flex-shrink: 0;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .qr-camera-trigger-label {
+            flex: 1;
+            text-align: left;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .qr-camera-trigger-chevron {
+            width: 14px;
+            height: 14px;
+            flex-shrink: 0;
+            color: rgba(255, 255, 255, 0.5);
+            transition: transform 0.15s ease, color 0.15s ease;
+        }
+
+        .qr-camera-dropdown.is-open .qr-camera-trigger-chevron {
+            transform: rotate(180deg);
+            color: rgba(168, 206, 56, 0.9);
+        }
+
+        .qr-camera-panel {
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: calc(100% + 6px);
+            background: rgba(28, 28, 32, 0.95);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 6px;
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+            opacity: 0;
+            visibility: hidden;
+            transform: scale(0.96) translateY(-4px);
+            transform-origin: top center;
+            transition: opacity 0.15s ease, transform 0.15s ease, visibility 0.15s ease;
+            z-index: 10;
+        }
+
+        .qr-camera-dropdown.is-open .qr-camera-panel {
+            opacity: 1;
+            visibility: visible;
+            transform: scale(1) translateY(0);
+        }
+
+        .qr-camera-item {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: transparent;
+            border: none;
+            border-radius: 8px;
+            padding: 9px 10px;
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 12px;
+            font-family: inherit;
+            text-align: left;
+            cursor: pointer;
+            transition: background 0.12s ease, color 0.12s ease;
+        }
+
+        .qr-camera-item:hover {
+            background: rgba(255, 255, 255, 0.06);
+            color: #fff;
+        }
+
+        .qr-camera-item.is-active {
+            color: #a8ce38;
+            background: rgba(168, 206, 56, 0.08);
+        }
+
+        .qr-camera-item-label {
+            flex: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .qr-camera-item-check {
+            width: 14px;
+            height: 14px;
+            flex-shrink: 0;
+            opacity: 0;
+            transition: opacity 0.12s ease;
+        }
+
+        .qr-camera-item.is-active .qr-camera-item-check {
+            opacity: 1;
+        }
+
+        .qr-pick-file-btn {
+            width: 100%;
+            padding: 10px 14px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .qr-pick-file-btn:hover {
+            background: rgba(255, 255, 255, 0.12);
+            color: #fff;
+        }
+
         /* Scrollbar */
         ::-webkit-scrollbar {
             width: 6px;
@@ -1010,7 +1236,7 @@
             <input type="text" class="link-input" id="linkInput"
                    placeholder="Paste peardrop:// link..."
                    autocomplete="off" spellcheck="false">
-            <label for="qrFileInput" class="qr-upload-btn" id="qrUploadBtn" title="Read peardrop:// link from a QR image">
+            <button type="button" class="qr-upload-btn" id="qrUploadBtn" title="Scan a QR code">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <rect x="3" y="3" width="7" height="7"></rect>
                     <rect x="14" y="3" width="7" height="7"></rect>
@@ -1020,7 +1246,7 @@
                     <path d="M14 20h3"></path>
                     <path d="M20 20v1"></path>
                 </svg>
-            </label>
+            </button>
             <input type="file" id="qrFileInput" accept="image/*" hidden>
         </div>
 
@@ -1042,6 +1268,35 @@
                 <button class="modal-btn primary" id="copyLinkBtn">Copy</button>
                 <button class="modal-btn secondary" id="closeShareBtn">Done</button>
             </div>
+        </div>
+    </div>
+
+    <!-- QR Scanner Modal -->
+    <div class="modal-overlay" id="qrScannerModal">
+        <div class="modal qr-scanner-modal">
+            <button type="button" class="qr-scanner-close" id="qrScannerCloseBtn" aria-label="Close">×</button>
+            <div class="modal-title">Scan a QR code</div>
+            <div class="qr-scanner-stage">
+                <video class="qr-scanner-video" id="qrScannerVideo" autoplay muted playsinline></video>
+                <div class="qr-scanner-frame"></div>
+                <div class="qr-scanner-status" id="qrScannerStatus">Starting camera…</div>
+            </div>
+            <div class="qr-camera-dropdown" id="qrCameraDropdown" hidden>
+                <button type="button" class="qr-camera-trigger" id="qrCameraTrigger" aria-haspopup="listbox" aria-expanded="false">
+                    <svg class="qr-camera-trigger-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                        <circle cx="12" cy="13" r="4"></circle>
+                    </svg>
+                    <span class="qr-camera-trigger-label" id="qrCameraTriggerLabel">Camera</span>
+                    <svg class="qr-camera-trigger-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </button>
+                <div class="qr-camera-panel" id="qrCameraPanel" role="listbox"></div>
+            </div>
+            <button type="button" class="qr-pick-file-btn" id="qrPickFileBtn">
+                Select file with QR
+            </button>
         </div>
     </div>
 
@@ -1101,6 +1356,7 @@
     <script src="lib/drive-item/drive-info-panel.js"></script>
     <script src="lib/drive-actions.js"></script>
     <script src="node_modules/jsqr/dist/jsQR.js"></script>
+    <script src="lib/qr-scanner/qr-scanner.js"></script>
     <script src="renderer.js"></script>
 </body>
 </html>
