@@ -19,7 +19,44 @@
             overflow: hidden;
             user-select: none;
             -webkit-font-smoothing: antialiased;
+            position: relative;
         }
+
+        /* ============================================================
+           BEGIN: Soft Aurora background (reactbits.dev-inspired)
+           To revert: delete this entire block + the position:relative
+           on body above + the .app `position: relative; z-index: 1`.
+           ============================================================ */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: -15%;
+            z-index: 0;
+            pointer-events: none;
+            background:
+                radial-gradient(closest-side, rgba(168, 206, 56, 0.42) 0%, rgba(168, 206, 56, 0) 70%) 18% 22% / 55% 55% no-repeat,
+                radial-gradient(closest-side, rgba(61, 181, 121, 0.38) 0%, rgba(61, 181, 121, 0) 72%) 78% 38% / 60% 60% no-repeat,
+                radial-gradient(closest-side, rgba(74, 158, 255, 0.22) 0%, rgba(74, 158, 255, 0) 70%) 42% 80% / 65% 65% no-repeat,
+                radial-gradient(closest-side, rgba(180, 110, 220, 0.18) 0%, rgba(180, 110, 220, 0) 70%) 88% 88% / 55% 55% no-repeat;
+            filter: blur(72px) saturate(135%);
+            animation: aurora-drift 10s ease-in-out infinite alternate;
+            opacity: 0.78;
+            will-change: transform, filter;
+        }
+
+        @keyframes aurora-drift {
+            0%   { transform: translate3d(0, 0, 0) rotate(0deg) scale(1.0); }
+            33%  { transform: translate3d(-3%, 2%, 0) rotate(6deg) scale(1.04); }
+            66%  { transform: translate3d(2%, -2.5%, 0) rotate(-5deg) scale(1.02); }
+            100% { transform: translate3d(-1%, 1%, 0) rotate(3deg) scale(1.05); }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            body::before { animation: none; }
+        }
+        /* ============================================================
+           END: Soft Aurora background
+           ============================================================ */
 
         .app {
             display: flex;
@@ -28,6 +65,8 @@
             padding: 16px;
             padding-top: 35px; /* Space for drag region + header */
             gap: 12px;
+            position: relative;
+            z-index: 1;
         }
 
         /* Draggable title bar region */
@@ -82,15 +121,29 @@
             fill: rgba(255, 255, 255, 0.8);
         }
 
-        /* Glassy style */
+        /* Glassy style — softened so the aurora background reads through */
         .glass {
-            background: rgba(40, 40, 40, 0.9);
-            backdrop-filter: blur(40px);
-            -webkit-backdrop-filter: blur(40px);
-            border: 1px solid rgba(100, 100, 100, 0.3);
-            box-shadow: 
-                0 8px 32px rgba(0, 0, 0, 0.7),
-                inset 0 1px 0 rgba(255, 255, 255, 0.08);
+            background: rgba(40, 40, 40, 0.32);
+            backdrop-filter: blur(28px) saturate(140%);
+            -webkit-backdrop-filter: blur(28px) saturate(140%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow:
+                0 8px 32px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.06);
+        }
+
+        /* Drive items inside the share history — frosted-cell look against
+           the aurora-tinted glass behind them. Targets the container only,
+           not text/icons inside (those inherit untouched). */
+        #listContainer .drive-item {
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border-color: rgba(255, 255, 255, 0.08);
+        }
+
+        #listContainer .drive-item:hover {
+            background: rgba(255, 255, 255, 0.08);
         }
 
         /* Compact Drop Zone */
@@ -504,6 +557,7 @@
             padding: 20px;
             max-width: 320px;
             width: 90%;
+            min-width: 0; /* let max-width win over a long unbreakable filename */
             box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4);
         }
 
@@ -511,6 +565,7 @@
             font-size: 16px;
             font-weight: 600;
             margin-bottom: 8px;
+            overflow-wrap: anywhere;
         }
 
         .confirm-message {
@@ -518,6 +573,30 @@
             color: rgba(255, 255, 255, 0.7);
             line-height: 1.5;
             margin-bottom: 20px;
+            overflow-wrap: anywhere; /* wrap mid-string for long filenames */
+            max-height: 50vh;
+            overflow-y: auto;
+        }
+
+        /* Override drive-item lib's confirm dialog so a long filename can't
+           push it past the app's width. The library styles get injected at
+           runtime (after this block), so we use `body .…` to bump specificity
+           and beat the cascade. */
+        body .drive-item-confirm {
+            max-width: min(340px, calc(100vw - 32px));
+            min-width: 0;
+            box-sizing: border-box;
+        }
+
+        body .drive-item-confirm-title,
+        body .drive-item-confirm-message {
+            overflow-wrap: anywhere;
+            word-break: break-word;
+        }
+
+        body .drive-item-confirm-message {
+            max-height: 50vh;
+            overflow-y: auto;
         }
 
         .confirm-buttons {
